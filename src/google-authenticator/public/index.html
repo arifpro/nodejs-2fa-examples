@@ -60,7 +60,7 @@
 
       try {
         // Send a request to the server to register the user
-        const response = await fetch('http://localhost:5005/register', {
+        const response = await fetch('/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -72,7 +72,7 @@
         if (data.qrCodeUrl) {
           // Show the QR code and secret
           document.getElementById('qrContainer').classList.remove('hidden');
-          document.getElementById('qrCodeImage').src = 'http://localhost:5005' + data.qrCodeUrl;
+          document.getElementById('qrCodeImage').src = data.qrCodeUrl;
           document.getElementById('qrCodeImage').classList.remove('hidden');
           document.getElementById('secret').innerText = `Secret: ${data.secret}`;
 
@@ -99,7 +99,7 @@
 
       try {
         // Send the OTP and username to verify it
-        const response = await fetch('http://localhost:5005/verify', {
+        const response = await fetch('/verify', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
