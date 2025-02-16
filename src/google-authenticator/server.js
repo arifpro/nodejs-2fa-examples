@@ -4,9 +4,13 @@ const speakeasy = require("speakeasy");
 const qrcode = require("qrcode");
 const path = require("path");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const app = express();
 app.use(bodyParser.json());
+
+// Enable CORS for all requests
+app.use(cors());
 
 // Serve static files (QR codes) from the 'public' folder inside the 'google-authenticator' folder
 app.use("/public", express.static(path.join(__dirname, "public")));
