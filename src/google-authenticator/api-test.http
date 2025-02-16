@@ -1,0 +1,23 @@
+# 🆕 Register a User and Get QR Code
+POST http://localhost:5005/register
+Content-Type: application/json
+
+{
+  "username": "john"
+}
+
+###
+
+# 🔑 Verify OTP (Replace with actual OTP from Google Authenticator)
+POST http://localhost:5005/verify
+Content-Type: application/json
+
+{
+  "username": "john",
+  "token": "123456"
+}
+
+###
+
+# 🧑‍💻 Get User’s Secret (For Debugging)
+GET http://localhost:5005/user/john

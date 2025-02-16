@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Authenticator Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom style to limit max height of QR code */
+    .qr-code {
+      max-width: 250px;
+      max-height: 250px;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900 flex justify-center items-center min-h-screen">
+
+  <div class="w-full max-w-md p-8 bg-white rounded-lg shadow-lg space-y-6">
+    <h1 class="text-2xl font-semibold text-center">Register Google Authenticator</h1>
+    <p class="text-center text-gray-600">Scan the QR code below using the Google Authenticator app.</p>
+
+    <!-- Username Input -->
+    <div class="space-y-4">
+      <input type="text" id="username" placeholder="Enter your username" 
+        class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      
+      <button id="registerButton" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Register User
+      </button>
+    </div>
+
+    <!-- QR Code and Secret will appear after successful registration -->
+    <div id="qrContainer" class="space-y-4 hidden">
+      <p class="text-center">QR Code:</p>
+      <img id="qrCodeImage" class="qr-code mx-auto hidden" />
+      <p id="secret" class="font-semibold text-center"></p>
+    </div>
+
+    <!-- OTP Verification -->
+    <div id="verifyContainer" class="space-y-4 hidden">
+      <h3 class="text-center text-xl font-semibold">Verify OTP</h3>
+      <input type="text" id="otp" placeholder="Enter OTP"
+        class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      
+      <button id="verifyButton" class="w-full py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+        Verify OTP
+      </button>
+      
+      <p id="verifyMessage" class="text-center text-sm"></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('registerButton').addEventListener('click', async () => {
+      const username = document.getElementById('username').value;
+      if (!username) {
+        alert('Please enter a username');
+        return;
+      }
+
+      try {
+        // Send a request to the server to register the user
+        const response = await fetch('http://localhost:5005/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username })
+        });
+        const data = await response.json();
+
+        if (data.qrCodeUrl) {
+          // Show the QR code and secret
+          document.getElementById('qrContainer').classList.remove('hidden');
+          document.getElementById('qrCodeImage').src = 'http://localhost:5005' + data.qrCodeUrl;
+          document.getElementById('qrCodeImage').classList.remove('hidden');
+          document.getElementById('secret').innerText = `Secret: ${data.secret}`;
+
+          // Show verify OTP section
+          document.getElementById('verifyContainer').classList.remove('hidden');
+
+          // Store secret for later OTP verification
+          window.secret = data.secret;
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to register. Please try again later.');
+      }
+    });
+
+    document.getElementById('verifyButton').addEventListener('click', async () => {
+      const token = document.getElementById('otp').value;
+      if (!token) {
+        alert('Please enter the OTP');
+        return;
+      }
+
+      try {
+        // Send the OTP and username to verify it
+        const response = await fetch('http://localhost:5005/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: document.getElementById('username').value,
+            token
+          })
+        });
+        const data = await response.json();
+
+        if (data.verified) {
+          document.getElementById('verifyMessage').innerText = 'OTP Verified Successfully!';
+          document.getElementById('verifyMessage').classList.add('text-green-500');
+          document.getElementById('verifyMessage').classList.remove('text-red-500');
+        } else {
+          document.getElementById('verifyMessage').innerText = 'Invalid OTP!';
+          document.getElementById('verifyMessage').classList.add('text-red-500');
+          document.getElementById('verifyMessage').classList.remove('text-green-500');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to verify OTP. Please try again later.');
+      }
+    });
+  </script>
+</body>
+</html>
