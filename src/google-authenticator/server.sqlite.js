@@ -5,6 +5,7 @@ const qrcode = require("qrcode");
 const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
 app.use(bodyParser.json());
@@ -119,7 +120,7 @@ app.get("/user/:username", (req, res) => {
 });
 
 // 🚀 Start Server
-const PORT = 5005;
+const PORT = process.env.PORT || 5005;
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)
 );
