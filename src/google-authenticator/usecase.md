@@ -1,10 +1,4 @@
-Here’s a **professional README.md** file for your **Express.js + SQLite + Speakeasy** app. It covers installation, setup, API usage, and use cases.  
 
----
-
-### **📌 README.md**
-
-```md
 # 🔐 Google Authenticator 2FA with Express.js & SQLite
 
 This is a **Two-Factor Authentication (2FA)** system using **Google Authenticator** with **Speakeasy**, **SQLite**, and **Express.js**. It allows users to register, scan a QR code, and verify OTPs for secure authentication.
